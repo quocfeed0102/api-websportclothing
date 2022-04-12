@@ -1,0 +1,32 @@
+{
+    "id": 1,
+    "name": "Áo đội tuyển Việt Nam đỏ (Sân nhà)",
+    "category": "1",
+    "price": 120000,
+    "description": "Mẫu quần áo đội tuyển Việt Nam ở sân nhà, đây là mẫu quần áo mới nhất của đội tuyển.",
+    "created_at": "1/4/2022",
+    "discount": "15",
+    "link_image": "hinh1.png",
+    "review": [
+        {
+            "id_user": "1",
+            "rate": "4",
+            "feedback": "good good good",
+            "created_at": "4/4/2022"
+        }
+    ],
+    "stock": [
+        {
+            "size": "S",
+            "available": 100
+        },
+        {
+            "size": "M",
+            "available": 59
+        },
+        {
+            "size": "L",
+            "available": 70
+        }
+    ]
+}
