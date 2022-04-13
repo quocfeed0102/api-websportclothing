@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 var productModel = require("../models/products");
 
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const condition = [];
 /* GET products listing. */
 router.get("/", function (req, res, next) {
   console.log("get products");
@@ -48,14 +49,17 @@ router.post("/", (req, res, next) => {
       {
         size: "S",
         available: sizeS,
+        sold: 0,
       },
       {
         size: "M",
         available: sizeM,
+        sold: 0,
       },
       {
         size: "L",
         available: sizeL,
+        sold: 0,
       },
     ],
   });
@@ -103,39 +107,58 @@ router.put("/:id", (req, res, next) => {
   var sizeL = req.query.sl;
   var description = req.query.des;
   var link_image = req.query.i;
-
   productModel
-    .updateOne(
-      { id: id },
-      {
-        $set: {
-          name: name,
-          category: category,
-          price: price,
-          description: description,
-          created_at: new Date().toLocaleDateString("en-US"),
-          discount: discount,
-          link_image: link_image,
-          stock: [
-            {
-              size: "S",
-              available: sizeS,
-            },
-            {
-              size: "M",
-              available: sizeM,
-            },
-            {
-              size: "L",
-              available: sizeL,
-            },
-          ],
-        },
-      }
-    )
+    .find({ id: id })
     .exec()
-    .then((result) => {
-      res.status(200).json(result);
+    .then((product) => {
+      if (product.length < 1) {
+        return res.status(401).json({
+          message: "Product not found",
+        });
+      } else {
+        productModel
+          .updateOne(
+            { id: id },
+            {
+              $set: {
+                name: name,
+                category: category,
+                price: price,
+                description: description,
+                created_at: new Date().toLocaleDateString("en-US"),
+                discount: discount,
+                link_image: link_image,
+                stock: [
+                  {
+                    size: "S",
+                    available: sizeS,
+                    sold: product[0].stock[0].sold,
+                  },
+                  {
+                    size: "M",
+                    available: sizeM,
+                    sold: product[0].stock[1].sold,
+                  },
+                  {
+                    size: "L",
+                    available: sizeL,
+                    sold: product[0].stock[2].sold,
+                  },
+                ],
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -166,5 +189,12 @@ router.get("/filter/sale", function (req, res, next) {
     res.json(data);
   });
 });
+//get product filter price
+// router.get("/filter/price/:", function (req, res, next) {
+//   console.log("get product by sale ");
+//   productModel.find({ discount: { $gt: 0 } }, function (err, data) {
+//     res.json(data);
+//   });
+// });
 
 module.exports = router;

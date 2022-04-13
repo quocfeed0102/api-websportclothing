@@ -110,35 +110,48 @@ router.patch("/:idUser/cart", function (req, res, next) {
     .then((user) => {
       if (user.length < 1) {
         return res.status(401).json({
-          message: "User not find",
+          message: "User not found",
         });
       } else {
-        console.log(user[0].cart);
-        user[0].cart.push({
-          id: +req.query.idProduct,
-          size: req.query.size,
-          quantity: req.query.quantity,
+        var idProduct = req.query.idProduct;
+        var quantity = req.query.quantity;
+        var exists = user[0].cart.forEach((cart, index) => {
+          if (cart.id == "1") {
+            console.log("trung: "+index);
+            return index;
+          }
         });
-        userModel
-          .updateOne(
-            { id: idUser },
-            {
-              $set: {
-                cart: user[0].cart,
-              },
-            }
-          )
-          .exec()
-          .then((result) => {
-            result.message = "Cart updated successfully";
-            res.status(200).json(result);
-          })
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json({
-              error: err,
-            });
+        console.log("exists: " + exists);
+        if (exists !== undefined) {
+          user[0].cart[index].quantity =
+            user[0].cart[index].quantity + quantity;
+        } else {
+          user[0].cart.push({
+            id: +req.query.idProduct,
+            size: req.query.size,
+            quantity: req.query.quantity,
           });
+          userModel
+            .updateOne(
+              { id: idUser },
+              {
+                $set: {
+                  cart: user[0].cart,
+                },
+              }
+            )
+            .exec()
+            .then((result) => {
+              result.message = "Cart updated successfully";
+              res.status(200).json(result);
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({
+                error: err,
+              });
+            });
+        }
       }
     })
     .catch((err) => {
@@ -157,7 +170,7 @@ router.delete("/:idUser/cart/:index", function (req, res, next) {
     .then((user) => {
       if (user.length < 1) {
         return res.status(401).json({
-          message: "User not find",
+          message: "User not found",
         });
       } else {
         console.log(user[0].cart);
@@ -200,7 +213,7 @@ router.patch("/:idUser/cart/:index", function (req, res, next) {
     .then((user) => {
       if (user.length < 1) {
         return res.status(401).json({
-          message: "User not find",
+          message: "User not found",
         });
       } else {
         console.log(user[0].cart);
@@ -217,6 +230,96 @@ router.patch("/:idUser/cart/:index", function (req, res, next) {
           .exec()
           .then((result) => {
             result.message = "Update quantity on item cart successfully";
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+//insert item wishlist
+router.patch("/:idUser/wishlist", function (req, res, next) {
+  var idUser = req.params.idUser;
+  userModel
+    .find({ id: idUser })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return res.status(401).json({
+          message: "User not found",
+        });
+      } else {
+        var idProduct = req.query.idProduct;
+        if (!user[0].wishlist.indexOf(idProduct) === true) {
+          res.status(200).json({ message: "Product exists on wishlist" });
+        } else {
+          user[0].wishlist.push(+req.query.idProduct);
+          userModel
+            .updateOne(
+              { id: idUser },
+              {
+                $set: {
+                  wishlist: user[0].wishlist,
+                },
+              }
+            )
+            .exec()
+            .then((result) => {
+              result.message = "Wishlist updated successfully";
+              res.status(200).json(result);
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({
+                error: err,
+              });
+            });
+        }
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+//Delete item wishlist by index array
+router.delete("/:idUser/wishlist/:index", function (req, res, next) {
+  var idUser = req.params.idUser;
+  userModel
+    .find({ id: idUser })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return res.status(401).json({
+          message: "User not found",
+        });
+      } else {
+        console.log(user[0].wishlist);
+        user[0].wishlist.splice(req.params.index, 1);
+        userModel
+          .updateOne(
+            { id: idUser },
+            {
+              $set: {
+                wishlist: user[0].wishlist,
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            result.message = "Delete item wishlist successfully";
             res.status(200).json(result);
           })
           .catch((err) => {
