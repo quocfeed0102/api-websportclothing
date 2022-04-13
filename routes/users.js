@@ -115,43 +115,43 @@ router.patch("/:idUser/cart", function (req, res, next) {
       } else {
         var idProduct = req.query.idProduct;
         var quantity = req.query.quantity;
-        var exists = user[0].cart.forEach((cart, index) => {
-          if (cart.id == "1") {
-            console.log("trung: "+index);
-            return index;
+        var size = req.query.size;
+        var exists;
+        for (var i = 0; i < user[0].cart.length; i++) {
+          if (user[0].cart[i].id == idProduct && user[0].cart[i].size == size) {
+            exists = i;
           }
-        });
-        console.log("exists: " + exists);
+        }
         if (exists !== undefined) {
-          user[0].cart[index].quantity =
-            user[0].cart[index].quantity + quantity;
+          user[0].cart[exists].quantity =
+            +user[0].cart[exists].quantity + +quantity;
         } else {
           user[0].cart.push({
-            id: +req.query.idProduct,
-            size: req.query.size,
-            quantity: req.query.quantity,
+            id: +idProduct,
+            size: size,
+            quantity: +quantity,
           });
-          userModel
-            .updateOne(
-              { id: idUser },
-              {
-                $set: {
-                  cart: user[0].cart,
-                },
-              }
-            )
-            .exec()
-            .then((result) => {
-              result.message = "Cart updated successfully";
-              res.status(200).json(result);
-            })
-            .catch((err) => {
-              console.log(err);
-              res.status(500).json({
-                error: err,
-              });
-            });
         }
+        userModel
+          .updateOne(
+            { id: idUser },
+            {
+              $set: {
+                cart: user[0].cart,
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            result.message = "Cart updated successfully";
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
       }
     })
     .catch((err) => {
@@ -217,7 +217,7 @@ router.patch("/:idUser/cart/:index", function (req, res, next) {
         });
       } else {
         console.log(user[0].cart);
-        user[0].cart[req.params.index].quantity = req.query.quantity;
+        user[0].cart[req.params.index].quantity = +req.query.quantity;
         userModel
           .updateOne(
             { id: idUser },
