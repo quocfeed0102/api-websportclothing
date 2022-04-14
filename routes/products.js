@@ -197,4 +197,65 @@ router.get("/filter/sale", function (req, res, next) {
 //   });
 // });
 
+//insert review
+router.patch(
+  "/:idProduct/review?idUser&rate&feedback",
+  function (req, res, next) {
+    var idUser = req.params.idUser;
+    var idProduct = req.params.idProduct;
+    var rate = req.params.rate;
+    var feedback = req.params.feedback;
+    productModel
+      .find({ id: idProduct })
+      .exec()
+      .then((product) => {
+        if (product.length < 1) {
+          return res.status(401).json({
+            message: "Product not found",
+          });
+        } else {
+          for (i = 0; i < product[0].review.length; i++) {
+            if (product[0].review[i].id_user == idUser) {
+              return res.status(401).json({
+                message: "User feedback EXISTS",
+              });
+            } else {
+              productModel
+                .updateOne(
+                  { id: idProduct },
+                  {
+                    $set: {
+                      review: product[0].review.push({
+                        id_user: idUser,
+                        rate: rate,
+                        feedback: feedback,
+                        created_at: new Date().toLocaleDateString("en-US"),
+                      }),
+                    },
+                  }
+                )
+                .exec()
+                .then((result) => {
+                  result.message = "Review user created successfully";
+                  res.status(200).json(result);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+  }
+);
+
 module.exports = router;

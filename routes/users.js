@@ -337,4 +337,5 @@ router.delete("/:idUser/wishlist/:index", function (req, res, next) {
       });
     });
 });
+
 module.exports = router;

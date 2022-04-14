@@ -1,0 +1,17 @@
+{
+    "id": "ord1",
+    "recipient_name": "quoc",
+    "recipient_phone": "123",
+    "recipient_email": "enlan0102@gmail.com",
+    "recipient_address": "Q9 HCM",
+    "note": "",
+    "products": [
+        {
+            "id": 1,
+            "size": "M",
+            "quantity": 3
+        }
+    ],
+    "discount": 10,
+    "total_price": 200000
+}

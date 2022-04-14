@@ -9,6 +9,7 @@ var usersRouter = require("./routes/users");
 var loginRouter = require("./routes/login");
 var signupRouter = require("./routes/signup");
 var productsRouter = require("./routes/products");
+var orderedRouter = require("./routes/ordereds");
 
 var app = express();
 var mongoose = require("mongoose");
@@ -32,6 +33,7 @@ app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/login", loginRouter);
 app.use("/api/v1/signup", signupRouter);
 app.use("/api/v1/products", productsRouter);
+app.use("/api/v1/ordereds", orderedRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
