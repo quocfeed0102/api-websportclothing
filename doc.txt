@@ -1,1 +1,2 @@
 signup: spring, cac param viet tat, chua dinh dang param = regex.
+random id, kiem tra exist id, neu trung thi random lai.
