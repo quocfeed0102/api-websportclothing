@@ -337,5 +337,51 @@ router.delete("/:idUser/wishlist/:index", function (req, res, next) {
       });
     });
 });
-
+//update id ordered
+router.patch("/:idUser/ordered", function (req, res, next) {
+  var idUser = req.params.idUser;
+  userModel
+    .find({ id: idUser })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return res.status(401).json({
+          message: "User not found",
+        });
+      } else {
+        var idOrdered = req.query.io;
+        if (!user[0].ordered.indexOf(idOrdered) === true) {
+          res.status(200).json({ message: "Ordered exists" });
+        } else {
+          user[0].ordered.push(+idOrdered);
+          userModel
+            .updateOne(
+              { id: idUser },
+              {
+                $set: {
+                  ordered: user[0].ordered,
+                },
+              }
+            )
+            .exec()
+            .then((result) => {
+              result.message = "Ordered updated successfully";
+              res.status(200).json(result);
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({
+                error: err,
+              });
+            });
+        }
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
 module.exports = router;
