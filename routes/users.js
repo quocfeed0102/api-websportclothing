@@ -72,34 +72,36 @@ router.patch("/:id", (req, res, next) => {
 });
 //change password
 router.patch("/:id/account", (req, res, next) => {
-  userModel
-    .updateOne(
-      { id: req.params.id },
-      {
-        $set: {
-          "account.password": req.query.p,
-          "account.created_at": new Date().toLocaleDateString("en-US"),
-        },
-      }
-    )
-    .exec()
-    .then((result) => {
-      // res.status(200).json({
-      //   message: "Product updated",
-      //   request: {
-      //     type: "GET",
-      //     url: "http://localhost:3000/users/" + id,
-      //   },
-      // });
-      result.message = "Password updated successfully";
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
+  var id = req.params.id;
+  var password = req.query.p;
+  var rePassword = req.query.rp;
+  if (password == rePassword) {
+    res.status(200).json({
+      message: "rePassword not matched",
     });
+  } else {
+    userModel
+      .updateOne(
+        { id: req.params.id },
+        {
+          $set: {
+            "account.password": req.query.p,
+            "account.created_at": new Date().toLocaleDateString("en-US"),
+          },
+        }
+      )
+      .exec()
+      .then((result) => {
+        result.message = "Password updated successfully";
+        res.status(200).json(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+  }
 });
 //insert item cart
 router.patch("/:idUser/cart", function (req, res, next) {
