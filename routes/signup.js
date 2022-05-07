@@ -3,7 +3,6 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 var userModel = require("../models/users");
-const formidable = require("formidable");
 
 router.post("/", (req, res, next) => {
   var message = {};
