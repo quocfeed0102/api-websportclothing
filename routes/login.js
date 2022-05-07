@@ -5,52 +5,54 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var userModel = require("../models/users");
+const multer = require("multer");
 
 //method post - login
-router.post("/", (req, res, next) => {
+router.post("/", multer().none(), (req, res, next) => {
+  var username = req.body.u;
+  var password = req.body.p;
+  console.log("username: " + username + " password: " + password);
   userModel
-    .find({ "account.username": req.query.u })
+    .find({ "account.username": username })
     .exec()
     .then((user) => {
       if (user.length < 1) {
         return res.status(401).json({
-          message: "Auth failed",
+          message: "NOT FOUND USER",
         });
-      } else if (req.query.p !== user[0].account.password) {
+      } else if (password !== user[0].account.password) {
         return res.status(401).json({
           message: "Auth failed",
         });
       }
-
-      // bcrypt.compare("123", "123", (err, result) => {
-      //   if (err) {
-      //     console.log("2");
-      //     return res.status(401).json({
+      // } else {
+      //   bcrypt.compare(password, user[0].account.password, (err, result) => {
+      //     if (err) {
+      //       return res.status(401).json({
+      //         message: "Error Decode",
+      //       });
+      //     }
+      //     if (result) {
+      //       const token = jwt.sign(
+      //         {
+      //           email: user[0].email,
+      //           userId: user[0]._id,
+      //         },
+      //         process.env.JWT_KEY,
+      //         {
+      //           expiresIn: "1h",
+      //         }
+      //       );
+      //       return res.status(200).json({
+      //         message: "Auth successful",
+      //         token: token,
+      //       });
+      //     }
+      //     res.status(401).json({
       //       message: "Auth failed",
       //     });
-      //   }
-      //   if (result) {
-      //     console.log("3");
-      //     const token = jwt.sign(
-      //       {
-      //         email: user[0].email,
-      //         userId: user[0]._id,
-      //       },
-      //       process.env.JWT_KEY,
-      //       {
-      //         expiresIn: "1h",
-      //       }
-      //     );
-      //     return res.status(200).json({
-      //       message: "Auth successful",
-      //       token: token,
-      //     });
-      //   }
-      //   console.log("4");
-      //   res.status(401).json({
-      //     message: "Auth failed",
       //   });
-      // });
+      // }
       else {
         return res.status(200).json({
           message: "Auth successful",

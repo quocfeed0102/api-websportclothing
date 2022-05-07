@@ -2,10 +2,14 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+<<<<<<< HEAD
+const userModel = require("../models/users");
+const multer = require("multer");
+=======
 var userModel = require("../models/users");
-const formidable = require("formidable");
+>>>>>>> main
 
-router.post("/", (req, res, next) => {
+router.post("/", multer().none(), (req, res, next) => {
   var message = {};
   var username = req.body.u;
   var email = req.body.e;
@@ -63,50 +67,50 @@ router.post("/", (req, res, next) => {
           });
           return res.status(409).json(message);
         } else {
-          bcrypt.hash(password, 10, (err, hash) => {
-            if (err) {
-              return res.status(500).json({
+          // bcrypt.hash(password, 10, (err, hash) => {
+          //   if (err) {
+          //     return res.status(500).json({
+          //       error: err,
+          //     });
+          //   } else {
+          const user = new userModel({
+            _id: new mongoose.Types.ObjectId(),
+            id: random(30),
+            name: name,
+            phone: phone,
+            email: email,
+            gender: "",
+            age: "",
+            address: "",
+            linkAvt: "",
+            account: {
+              username: username,
+              password: repassword,
+              created_at: new Date().toLocaleDateString("en-US"),
+            },
+            wishList: [],
+            cart: [],
+            ordered: [],
+          });
+          user
+            .save()
+            .then((result) => {
+              console.log(result);
+              res.status(201).json({
+                status: "User created",
+              });
+            })
+            .catch((err) => {
+              console.log("error: " + err);
+              res.status(500).json({
                 error: err,
               });
-            } else {
-              const user = new userModel({
-                _id: new mongoose.Types.ObjectId(),
-                id: random(30),
-                name: name,
-                phone: phone,
-                email: email,
-                gender: "",
-                age: "",
-                address: "",
-                linkAvt: "",
-                account: {
-                  username: username,
-                  password: hash,
-                  created_at: new Date().toLocaleDateString("en-US"),
-                },
-                wishList: [],
-                cart: [],
-                ordered: [],
-              });
-              user
-                .save()
-                .then((result) => {
-                  console.log(result);
-                  res.status(201).json({
-                    status: "User created",
-                  });
-                })
-                .catch((err) => {
-                  console.log("error: " + err);
-                  res.status(500).json({
-                    error: err,
-                  });
-                });
-            }
-          });
+            });
         }
       });
   }
+  //     });
+  //  }
 });
 
 module.exports = router;

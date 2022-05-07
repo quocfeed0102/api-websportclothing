@@ -2,6 +2,7 @@ var express = require("express");
 const Ordered = require("../models/ordereds");
 var router = express.Router();
 var orderedModel = require("../models/ordereds");
+const multer = require("multer");
 const random = (length = 8) => {
   // Declare all characters
   let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -27,18 +28,18 @@ router.get("/:id", function (req, res, next) {
 });
 
 //insert new ordered
-router.post("/", (req, res, next) => {
-  var recipientName = req.query.rn;
-  var recipientPhone = req.query.rp;
-  var recipientEmail = req.query.re;
-  var recipientAddress = req.query.ra;
-  var note = req.query.n;
+router.post("/", multer().none(), (req, res, next) => {
+  var recipientName = req.body.rn;
+  var recipientPhone = req.body.rp;
+  var recipientEmail = req.body.re;
+  var recipientAddress = req.body.ra;
+  var note = req.body.n;
   //products co format: id,id,id,....
-  var listProduct = req.query.products.split(",");
-  var sizeProduct = req.query.sl.split(",");
-  var quantityList = req.query.qt.split(",");
-  var discount = req.query.d;
-  var totalPrice = req.query.tp;
+  var listProduct = req.body.products.split(",");
+  var sizeProduct = req.body.sl.split(",");
+  var quantityList = req.body.qt.split(",");
+  var discount = req.body.d;
+  var totalPrice = req.body.tp;
 
   var id = random(30);
   var products = [];

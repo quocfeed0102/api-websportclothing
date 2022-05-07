@@ -3,9 +3,24 @@ var router = express.Router();
 const mongoose = require("mongoose");
 
 var productModel = require("../models/products");
+var imageUpload = ""; //luu tru image dang upload tam thoi.
 
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const condition = [];
+
+const multer = require("multer");
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    imageUpload = uniqueSuffix + "-" + file.originalname;
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage: storage });
+
 /* GET products listing. */
 router.get("/", function (req, res, next) {
   console.log("get products");
@@ -22,17 +37,20 @@ router.get("/:id", function (req, res, next) {
   });
 });
 //post new product
-router.post("/", (req, res, next) => {
+router.post("/", upload.single("i"), (req, res, next) => {
   console.log("Post new product");
-  var name = req.query.n;
-  var price = req.query.p;
-  var discount = req.query.d;
-  var category = req.query.c;
-  var sizeS = req.query.ss;
-  var sizeM = req.query.sm;
-  var sizeL = req.query.sl;
-  var description = req.query.des;
-  var link_image = req.query.i;
+  var name = req.body.n;
+  var price = req.body.p;
+  var discount = req.body.d;
+  var category = req.body.c;
+  var sizeS = req.body.ss;
+  var sizeM = req.body.sm;
+  var sizeL = req.body.sl;
+  var description = req.body.des;
+  var link_image = imageUpload;
+  imageUpload = "";
+
+  console.log("name: " + name);
 
   const product = new productModel({
     _id: new mongoose.Types.ObjectId(),
@@ -95,18 +113,19 @@ router.delete("/:id", (req, res, next) => {
     });
 });
 //Update - PUT method product
-router.put("/:id", (req, res, next) => {
+router.put("/:id", upload.single("i"), (req, res, next) => {
   var id = req.params.id;
   console.log("Put: " + id);
-  var name = req.query.n;
-  var price = req.query.p;
-  var discount = req.query.d;
-  var category = req.query.c;
-  var sizeS = req.query.ss;
-  var sizeM = req.query.sm;
-  var sizeL = req.query.sl;
-  var description = req.query.des;
-  var link_image = req.query.i;
+  var name = req.body.n;
+  var price = req.body.p;
+  var discount = req.body.d;
+  var category = req.body.c;
+  var sizeS = req.body.ss;
+  var sizeM = req.body.sm;
+  var sizeL = req.body.sl;
+  var description = req.body.des;
+  var link_image = imageUpload;
+  imageUpload = "";
   productModel
     .find({ id: id })
     .exec()

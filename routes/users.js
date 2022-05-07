@@ -1,7 +1,50 @@
 var express = require("express");
 var router = express.Router();
+var multer = require("multer");
 
 var userModel = require("../models/users");
+<<<<<<< HEAD
+const multer = require("multer");
+var imageUpload = "";
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    imageUpload = uniqueSuffix + "-" + file.originalname;
+    cb(null, uniqueSuffix + "-" + file.originalname);
+=======
+
+//STORAGE
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "../uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix);
+>>>>>>> main
+  },
+});
+
+const upload = multer({ storage: storage });
+
+<<<<<<< HEAD
+var fileFilter = (req, file, cb) => {
+  // reject a file
+  // if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  //   cb(null, true);
+  // } else {
+  //   cb(null, false);
+  // }
+  cb(null, true);
+};
+
+//var upload = multer({ storage: storage });
+
+=======
+>>>>>>> main
 /* GET users listing. */
 router.get("/", function (req, res, next) {
   userModel.find({}, function (err, data) {
@@ -16,6 +59,8 @@ router.get("/:id", function (req, res, next) {
     res.json(data);
   });
 });
+//get image by id
+
 //get user by username
 router.get("/account/:username", function (req, res, next) {
   var username = req.params.username;
@@ -40,41 +85,70 @@ router.delete("/:id", (req, res, next) => {
       });
     });
 });
+
 //update user
-router.patch("/:id", (req, res, next) => {
+router.patch("/:id", upload.single("linkAvt"), (req, res, next) => {
+<<<<<<< HEAD
   var id = req.params.id;
-  const updateOps = {};
-  console.log(req.query);
-  // for (let ops in req.query) {
-  //   //updateOps[ops.propName] = ops.value;
-  //   console.log(ops. + ": " + ops.value);
-  // }
-  console.log(updateOps);
+
+  console.log(JSON.stringify(req.body));
+
+  if (imageUpload !== "") {
+    req.body.linkAvt = imageUpload;
+    imageUpload = "";
+  }
   userModel
-    .updateOne({ id: id }, { $set: req.query })
+    .updateOne({ id: id }, { $set: req.body })
     .exec()
     .then((result) => {
-      // res.status(200).json({
-      //   message: "Product updated",
-      //   request: {
-      //     type: "GET",
-      //     url: "http://localhost:3000/users/" + id,
-      //   },
-      // });
+      result.message = "succeeded";
       res.status(200).json(result);
     })
     .catch((err) => {
       console.log(err);
       res.status(500).json({
+        result: "failed",
         error: err,
       });
     });
+=======
+
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      console.log(1);
+    } else if (err) {
+      // An unknown error occurred when uploading.
+      console.log(2);
+    }
+      var id = req.params.id;
+
+      if (req.body.linkAvt != undefined) {
+        console.log("aaaa");
+      }
+    
+      userModel
+        .updateOne({ id: id }, { $set: req.query })
+        .exec()
+        .then((result) => {
+          res.status(200).json(result);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: err,
+          });
+        });
+      // Everything went fine.
+    })
+  
+>>>>>>> main
 });
 //change password
 router.patch("/:id/account", (req, res, next) => {
-  var id = req.params.id;
-  var password = req.query.p;
-  var rePassword = req.query.rp;
+  var password = req.body.p;
+  var rePassword = req.body.rp;
+
   if (password == rePassword) {
     res.status(200).json({
       message: "rePassword not matched",

@@ -3,9 +3,6 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-var bodyParser = require("body-parser");
-var multer = require("multer");
-var forms = multer();
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -16,9 +13,6 @@ var orderedRouter = require("./routes/ordereds");
 
 var app = express();
 
-app.use(bodyParser.json());
-app.use(forms.array());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 var mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/WebSport", {
@@ -26,6 +20,8 @@ mongoose.connect("mongodb://localhost:27017/WebSport", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
