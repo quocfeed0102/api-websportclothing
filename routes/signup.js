@@ -2,12 +2,8 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-<<<<<<< HEAD
-const userModel = require("../models/users");
-const multer = require("multer");
-=======
 var userModel = require("../models/users");
->>>>>>> main
+const multer = require("multer");
 
 router.post("/", multer().none(), (req, res, next) => {
   var message = {};
