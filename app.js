@@ -3,7 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-
+var cors = require("cors");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var loginRouter = require("./routes/login");
@@ -13,14 +13,12 @@ var orderedRouter = require("./routes/ordereds");
 
 var app = express();
 
-
 var mongoose = require("mongoose");
 mongoose.connect("mongodb://localhost:27017/WebSport", {
   useNewUrlParser: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -62,5 +60,12 @@ db.once("open", function () {
   // we're connected!
   console.log("connected mongodb");
 });
-
+//cors
+app.use(
+  cors({
+    origin: "http://localhost:3000", // allow to server to accept request from different origin
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true, // allow session cookie from browser to pass through
+  })
+);
 module.exports = app;
