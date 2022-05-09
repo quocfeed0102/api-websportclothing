@@ -15,8 +15,11 @@ router.post("/", multer().none(), (req, res, next) => {
   var name = req.body.n;
 
   //check password & repassword
+
   if (password !== repassword) {
     message.repassword = "not matched";
+  } else if (password.trim() === "") {
+    message.repassword = "password null!!!";
   } else {
     console.log("repassword matched");
 

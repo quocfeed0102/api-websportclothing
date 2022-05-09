@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
-
+var fs = require("fs");
 var userModel = require("../models/users");
 const multer = require("multer");
 var imageUpload = "";
+var pathImageUpload = "";
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/uploads");
@@ -18,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 var fileFilter = (req, file, cb) => {
-  // reject a file
+  // reject a filer
   // if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
   //   cb(null, true);
   // } else {
@@ -77,8 +78,8 @@ router.patch("/:id", upload.single("linkAvt"), (req, res, next) => {
   console.log(JSON.stringify(req.body));
 
   if (imageUpload !== "") {
-    req.body.linkAvt = imageUpload;
-    imageUpload = "";
+    req.body.linkAvt = pathImageUpload;
+    pathImageUpload = "";
   }
   userModel
     .updateOne({ id: id }, { $set: req.body })
@@ -410,5 +411,22 @@ router.patch("/:idUser/ordered", function (req, res, next) {
         error: err,
       });
     });
+});
+
+//get image of users
+router.get("/:id/image", function (req, res, next) {
+  var id = req.params.id;
+  console.log("get IMAGE of users by id " + id);
+  productModel.find({ id: id }, function (err, data) {
+    console.log(data[0].link_image);
+    let imageName = "./public/uploads/" + data[0].link_image;
+    fs.readFile(imageName, (err, imageData) => {
+      if (err) {
+        res.json({ result: "failed", error: err });
+      }
+      res.writeHead(200, { "content-type": "image/jpeg" });
+      res.end(imageData);
+    });
+  });
 });
 module.exports = router;

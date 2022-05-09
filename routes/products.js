@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const mongoose = require("mongoose");
-
+var fs = require("fs");
 var productModel = require("../models/products");
 var imageUpload = ""; //luu tru image dang upload tam thoi.
 
@@ -276,5 +276,20 @@ router.patch(
       });
   }
 );
-
+//get image of product
+router.get("/:id/image", function (req, res, next) {
+  var id = req.params.id;
+  console.log("get IMAGE of product by id " + id);
+  productModel.find({ id: id }, function (err, data) {
+    console.log(data[0].link_image);
+    let imageName = "./public/uploads/" + data[0].link_image;
+    fs.readFile(imageName, (err, imageData) => {
+      if (err) {
+        res.json({ result: "failed", error: err });
+      }
+      res.writeHead(200, { "content-type": "image/jpeg" });
+      res.end(imageData);
+    });
+  });
+});
 module.exports = router;
