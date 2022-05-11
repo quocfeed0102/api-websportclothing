@@ -126,6 +126,8 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
   var description = req.body.des;
   var link_image = imageUpload;
   imageUpload = "";
+
+  console.log("name: " + name);
   productModel
     .find({ id: id })
     .exec()
@@ -195,19 +197,21 @@ router.get("/category/:id", function (req, res, next) {
   });
 });
 //get product sale
-router.get("/filter/sale", function (req, res, next) {
-  console.log("get product by sale ");
-  productModel.find({ discount: { $gt: 0 } }, function (err, data) {
-    res.json(data);
-  });
+router.get("/filter/sale?:condition", function (req, res, next) {
+  console.log("get product by sale");
+  var cond;
+  if (condition === "asc") {
+    cond = 1;
+  } else if (condition === "desc") {
+    cond = -1;
+  }
+  productModel
+    .find({ discount: { $gt: 0 } }, function (err, data) {
+      res.json(data);
+    })
+    .sort({ discount: cond });
 });
-//get product sale
-router.get("/filter/sale", function (req, res, next) {
-  console.log("get product by sale ");
-  productModel.find({ discount: { $gt: 0 } }, function (err, data) {
-    res.json(data);
-  });
-});
+
 //get product filter price
 // router.get("/filter/price/:", function (req, res, next) {
 //   console.log("get product by sale ");
@@ -291,5 +295,9 @@ router.get("/:id/image", function (req, res, next) {
       res.end(imageData);
     });
   });
+});
+//Update sold product - so luong da ban
+router.patch("/", function (req, res, next) {
+  var idUser = req.params.idUser;
 });
 module.exports = router;
