@@ -1,9 +1,10 @@
 var express = require("express");
-const Ordered = require("../models/ordereds");
 var router = express.Router();
+var mongoose = require("mongoose");
 var orderedModel = require("../models/ordereds");
-const multer = require("multer");
-const random = (length = 8) => {
+var userModel = require("../models/users");
+var multer = require("multer");
+var random = (length = 8) => {
   // Declare all characters
   let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   // Pick characers randomly
@@ -61,6 +62,7 @@ router.post("/", multer().none(), (req, res, next) => {
     products: products,
     discount: +discount,
     total_price: +totalPrice,
+    status: "shipping",
   });
   ordered
     .save()
@@ -76,6 +78,65 @@ router.post("/", multer().none(), (req, res, next) => {
       res.status(500).json({
         error: err,
       });
+    });
+});
+//update status ordered
+router.patch("/:id", multer().none(), function (req, res, next) {
+  var id = req.params.id;
+  var status = req.body.status;
+  console.log("status: " + status);
+  orderedModel
+    .find({ id: id })
+    .exec()
+    .then((ordered) => {
+      if (ordered.length < 1) {
+        return res.status(401).json({
+          message: "Ordered not found",
+        });
+      } else {
+        orderedModel
+          .updateOne(
+            { id: id },
+            {
+              $set: {
+                status: status,
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            result.message = "Update status ordered successfully";
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+//get product sale
+router.get("/filter/:email", function (req, res, next) {
+  console.log("get list ordered by email");
+  var email = req.params.email;
+  console.log("email: " + email);
+
+  orderedModel
+    .find({ recipient_email: email })
+    .exec()
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      console.log(err);
     });
 });
 

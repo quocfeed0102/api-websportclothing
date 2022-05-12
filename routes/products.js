@@ -199,7 +199,7 @@ router.get("/category/:id", function (req, res, next) {
 //get product sale
 router.get("/filter/sale?:condition", function (req, res, next) {
   console.log("get product by sale");
-  var cond;
+  var cond = 0;
   if (condition === "asc") {
     cond = 1;
   } else if (condition === "desc") {
@@ -296,8 +296,57 @@ router.get("/:id/image", function (req, res, next) {
     });
   });
 });
-//Update sold product - so luong da ban
-router.patch("/", function (req, res, next) {
-  var idUser = req.params.idUser;
+//Update sold product.stock - so luong da ban
+router.patch("/stock", multer().none(), function (req, res, next) {
+  var listProduct = req.body.products.split(",");
+  var sizeProduct = req.body.listSize.split(",");
+  var quantityList = req.body.quantityList.split(",");
+  console.log("patch update sold");
+  for (var i = 0; i < listProduct.length; i++) {
+    productModel
+      .find({ id: listProduct[i] })
+      .exec()
+      .then((product) => {
+        if (product.length < 1) {
+          return res.status(401).json({
+            message: "Product not found",
+          });
+        } else {
+          if (sizeProduct[i] === "S") {
+            product.stock[0].available -= quantityList[i];
+            product.stock[0].sold += quantityList[i];
+          } else if (sizeProduct[i] === "M") {
+            product.stock[1].available -= quantityList[i];
+            product.stock[1].sold += quantityList[i];
+          } else {
+            product.stock[2].available -= quantityList[i];
+            product.stock[2].sold += quantityList[i];
+          }
+          productModel
+            .updateOne(
+              { id: listProduct[i] },
+              {
+                $set: product,
+              }
+            )
+            .exec()
+            .then((result) => {
+              res.status(200).json(result);
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({
+                error: err,
+              });
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+  }
 });
 module.exports = router;

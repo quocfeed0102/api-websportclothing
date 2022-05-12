@@ -13,6 +13,7 @@ const OrderSchema = new Schema(
     products: { type: "array" },
     discount: { type: "number" },
     total_price: { type: "number" },
+    status: { type: "string" },
   },
   { collection: "Ordereds" }
 );

@@ -366,8 +366,9 @@ router.delete("/:idUser/wishlist/:index", function (req, res, next) {
     });
 });
 //update id ordered
-router.patch("/:idUser/ordered", function (req, res, next) {
-  var idUser = req.params.idUser;
+router.patch("/:idUser/ordered",multer().none(), function (req, res, next) {
+  var idUser = req.body.idUser;
+  console.log("idUser: " + idUser);
   userModel
     .find({ id: idUser })
     .exec()
@@ -377,11 +378,12 @@ router.patch("/:idUser/ordered", function (req, res, next) {
           message: "User not found",
         });
       } else {
-        var idOrdered = req.query.io;
+        var idOrdered = req.body.io;
+        console.log("idOrdered: "+ idOrdered);
         if (!user[0].ordered.indexOf(idOrdered) === true) {
           res.status(200).json({ message: "Ordered exists" });
         } else {
-          user[0].ordered.push(+idOrdered);
+          user[0].ordered.push(idOrdered);
           userModel
             .updateOne(
               { id: idUser },
