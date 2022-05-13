@@ -130,7 +130,7 @@ router.patch("/:id/account", (req, res, next) => {
   }
 });
 //insert item cart
-router.patch("/:idUser/cart", function (req, res, next) {
+router.patch("/:idUser/cart",multer().none(), function (req, res, next) {
   var idUser = req.params.idUser;
   userModel
     .find({ id: idUser })
@@ -141,9 +141,9 @@ router.patch("/:idUser/cart", function (req, res, next) {
           message: "User not found",
         });
       } else {
-        var idProduct = req.query.idProduct;
-        var quantity = req.query.quantity;
-        var size = req.query.size;
+        var idProduct = req.body.idProduct;
+        var quantity = req.body.quantity;
+        var size = req.body.size;
         var exists;
         for (var i = 0; i < user[0].cart.length; i++) {
           if (user[0].cart[i].id == idProduct && user[0].cart[i].size == size) {
@@ -429,6 +429,13 @@ router.get("/:id/image", function (req, res, next) {
       res.writeHead(200, { "content-type": "image/jpeg" });
       res.end(imageData);
     });
+  });
+});
+/* GET product in cart listing. */
+router.get("/:id/:property", function (req, res, next) {
+  console.log("property");
+  userModel.find({}, function (err, data) {
+    res.json(data);
   });
 });
 module.exports = router;

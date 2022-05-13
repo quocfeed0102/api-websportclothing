@@ -197,14 +197,17 @@ router.get("/category/:id", function (req, res, next) {
   });
 });
 //get product sale
-router.get("/filter/sale?:condition", function (req, res, next) {
+router.get("/filter/sale/:condition", function (req, res, next) {
   console.log("get product by sale");
   var cond = 0;
+  var condition = req.params.condition;
+  console.log("condition: " + condition);
   if (condition === "asc") {
     cond = 1;
   } else if (condition === "desc") {
     cond = -1;
   }
+  console.log("conditions: " + cond);
   productModel
     .find({ discount: { $gt: 0 } }, function (err, data) {
       res.json(data);
