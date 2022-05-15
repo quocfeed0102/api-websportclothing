@@ -22,8 +22,8 @@ router.get("/", function (req, res, next) {
   });
 });
 //get ordered by id
-router.get("/:email", function (req, res, next) {
-  console.log("get ordered by email: " + req.params.email);
+router.get("/user/:id", function (req, res, next) {
+  console.log("get ordered by idUser: " + req.params.id);
   // orderedModel.aggregate({ id: req.params.id }, function (err, data) {
   //   res.json(data);
   // });
@@ -34,7 +34,7 @@ router.get("/:email", function (req, res, next) {
       },
       {
         $match: {
-          recipient_email: req.params.email,
+          id_user: req.params.id,
         },
       },
       {
@@ -59,6 +59,7 @@ router.get("/:email", function (req, res, next) {
 
 //insert new ordered
 router.post("/", multer().none(), (req, res, next) => {
+  var id_user = req.body.idUser;
   var recipientName = req.body.rn;
   var recipientPhone = req.body.rp;
   var recipientEmail = req.body.re;
@@ -83,6 +84,7 @@ router.post("/", multer().none(), (req, res, next) => {
   const ordered = new orderedModel({
     _id: new mongoose.Types.ObjectId(),
     id: id,
+    id_user: id_user,
     recipient_name: recipientName,
     recipient_phone: recipientPhone,
     recipient_email: recipientEmail,

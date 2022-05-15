@@ -5,6 +5,7 @@ const OrderSchema = new Schema(
   {
     _id: mongoose.Schema.Types.ObjectId,
     id: { type: "string" },
+    id_user: { type: "string" },
     recipient_name: { type: "string" },
     recipient_phone: { type: "string" },
     recipient_email: { type: "string" },
