@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require("mongoose");
 var orderedModel = require("../models/ordereds");
 var userModel = require("../models/users");
+var productModel = require("../models/products");
 var multer = require("multer");
 var random = (length = 8) => {
   // Declare all characters
@@ -21,11 +22,39 @@ router.get("/", function (req, res, next) {
   });
 });
 //get ordered by id
-router.get("/:id", function (req, res, next) {
-  console.log("get ordered by id ");
-  orderedModel.find({ id: req.params.id }, function (err, data) {
-    res.json(data);
-  });
+router.get("/:email", function (req, res, next) {
+  console.log("get ordered by email: " + req.params.email);
+  // orderedModel.aggregate({ id: req.params.id }, function (err, data) {
+  //   res.json(data);
+  // });
+  orderedModel
+    .aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $match: {
+          recipient_email: req.params.email,
+        },
+      },
+      {
+        $lookup: {
+          from: "Products",
+          localField: "products.id",
+          foreignField: "id",
+          as: "product",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ])
+    .exec()
+    .then((data) => {
+      res.status(200).json(data);
+    });
 });
 
 //insert new ordered
@@ -41,9 +70,9 @@ router.post("/", multer().none(), (req, res, next) => {
   var quantityList = req.body.qt.split(",");
   var discount = req.body.d;
   var totalPrice = req.body.tp;
-
   var id = random(30);
   var products = [];
+
   for (var i = 0; i < sizeProduct.length; i++) {
     products.push({
       id: +listProduct[i],

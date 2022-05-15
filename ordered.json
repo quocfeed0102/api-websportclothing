@@ -8,6 +8,9 @@
     "products": [
         {
             "id": 1,
+            "name":"Áo đội tuyển Việt Nam đỏ (Sân nhà)",
+            "price": 120000,
+            "discount":15,
             "size": "M",
             "quantity": 3
         }

@@ -24,9 +24,12 @@ const upload = multer({ storage: storage });
 /* GET products listing. */
 router.get("/", function (req, res, next) {
   console.log("get products");
-  productModel.find({}, function (err, data) {
-    res.json(data);
-  });
+  var condition = req.params.condition;
+  productModel
+    .find({}, function (err, data) {
+      res.json(data);
+    })
+    .sort(req.query);
 });
 //get product by id
 router.get("/:id", function (req, res, next) {
@@ -216,12 +219,22 @@ router.get("/filter/sale/:condition", function (req, res, next) {
 });
 
 //get product filter price
-// router.get("/filter/price/:", function (req, res, next) {
-//   console.log("get product by sale ");
-//   productModel.find({ discount: { $gt: 0 } }, function (err, data) {
-//     res.json(data);
-//   });
-// });
+router.get("/filter/price", function (req, res, next) {
+  console.log("get product by price ");
+  console.log("value1: " + req.query.value1);
+  console.log("value2: " + req.query.value2);
+  productModel.find(
+    {
+      $and: [
+        { price: { $gte: +req.query.value1 } },
+        { price: { $lte: +req.query.value2 } },
+      ],
+    },
+    function (err, data) {
+      res.json(data);
+    }
+  );
+});
 
 //insert review
 router.patch(

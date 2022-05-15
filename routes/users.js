@@ -130,7 +130,7 @@ router.patch("/:id/account", (req, res, next) => {
   }
 });
 //insert item cart
-router.patch("/:idUser/cart",multer().none(), function (req, res, next) {
+router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
   var idUser = req.params.idUser;
   userModel
     .find({ id: idUser })
@@ -366,7 +366,7 @@ router.delete("/:idUser/wishlist/:index", function (req, res, next) {
     });
 });
 //update id ordered
-router.patch("/:idUser/ordered",multer().none(), function (req, res, next) {
+router.patch("/:idUser/ordered", multer().none(), function (req, res, next) {
   var idUser = req.body.idUser;
   console.log("idUser: " + idUser);
   userModel
@@ -379,7 +379,7 @@ router.patch("/:idUser/ordered",multer().none(), function (req, res, next) {
         });
       } else {
         var idOrdered = req.body.io;
-        console.log("idOrdered: "+ idOrdered);
+        console.log("idOrdered: " + idOrdered);
         if (!user[0].ordered.indexOf(idOrdered) === true) {
           res.status(200).json({ message: "Ordered exists" });
         } else {
@@ -432,10 +432,28 @@ router.get("/:id/image", function (req, res, next) {
   });
 });
 /* GET product in cart listing. */
-router.get("/:id/:property", function (req, res, next) {
-  console.log("property");
-  userModel.find({}, function (err, data) {
-    res.json(data);
-  });
-});
+// router.get("/:id/cart", function (req, res, next) {
+//   console.log("get cart by id user");
+//   var id = req.params.id;
+//   userModel
+//     .find({ id: id })
+//     .exec()
+//     .then((user) => {
+//       if (user.length < 1) {
+//         return res.status(401).json({
+//           message: "User not found",
+//         });
+//       } else {
+//        // console.log("cart: " +  JSON.stringify(user[0].cart[0]));
+        
+//         res.status(200).json(user[0].cart);
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).json({
+//         error: err,
+//       });
+//     });
+// });
 module.exports = router;
