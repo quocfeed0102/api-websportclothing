@@ -237,13 +237,14 @@ router.get("/filter/price", function (req, res, next) {
 });
 
 //insert review
-router.patch(
-  "/:idProduct/review?idUser&rate&feedback",
+router.patch(~~
+  "/:idProduct/review",
+  multer().none(),
   function (req, res, next) {
-    var idUser = req.params.idUser;
+    var idUser = req.body.idUser;
     var idProduct = req.params.idProduct;
-    var rate = req.params.rate;
-    var feedback = req.params.feedback;
+    var rate = req.body.rate;
+    var feedback = req.body.feedback;
     productModel
       .find({ id: idProduct })
       .exec()
