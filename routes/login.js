@@ -54,23 +54,20 @@ router.post("/", multer().none(), (req, res, next) => {
       //   });
       // }
       else {
-        fetch("http://localhost:3000/api/v1/users/account/" + username)
-          .then((response) => response.json())
-          .then((data) => {
+        userModel
+          .find({ username: username })
+          .exec()
+          .then((result) => {
             return res.status(200).json({
-              user: data[0],
+              user: result[0],
               message: "Auth successful",
               role: user[0].account.role,
             });
           })
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            return res.status(500).json(error);
+          });
       }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
     });
 });
 
