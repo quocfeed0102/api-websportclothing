@@ -9,7 +9,7 @@
     "link_image": "hinh1.png",
     "review": [
         {
-            "id_user": "1",
+            "username": "anhquoc",
             "rate": "4",
             "feedback": "good good good",
             "created_at": "4/4/2022"

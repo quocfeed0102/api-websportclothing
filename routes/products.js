@@ -237,66 +237,59 @@ router.get("/filter/price", function (req, res, next) {
 });
 
 //insert review
-router.patch(~~
-  "/:idProduct/review",
-  multer().none(),
-  function (req, res, next) {
-    var idUser = req.body.idUser;
-    var idProduct = req.params.idProduct;
-    var rate = req.body.rate;
-    var feedback = req.body.feedback;
-    productModel
-      .find({ id: idProduct })
-      .exec()
-      .then((product) => {
-        if (product.length < 1) {
-          return res.status(401).json({
-            message: "Product not found",
-          });
-        } else {
-          for (i = 0; i < product[0].review.length; i++) {
-            if (product[0].review[i].id_user == idUser) {
-              return res.status(401).json({
-                message: "User feedback EXISTS",
-              });
-            } else {
-              productModel
-                .updateOne(
-                  { id: idProduct },
-                  {
-                    $set: {
-                      review: product[0].review.push({
-                        id_user: idUser,
-                        rate: rate,
-                        feedback: feedback,
-                        created_at: new Date().toLocaleDateString("en-US"),
-                      }),
-                    },
-                  }
-                )
-                .exec()
-                .then((result) => {
-                  result.message = "Review user created successfully";
-                  res.status(200).json(result);
-                })
-                .catch((err) => {
-                  console.log(err);
-                  res.status(500).json({
-                    error: err,
-                  });
-                });
-            }
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          error: err,
+router.patch("/:idProduct/review", multer().none(), function (req, res, next) {
+  var username = req.body.username;
+  var idProduct = req.params.idProduct;
+  var rate = req.body.rate;
+  var feedback = req.body.feedback;
+  console.log("username: " + username);
+  console.log("feedback: " + feedback);
+  console.log("rate: " + rate);
+  console.log("idProduct: " + idProduct);
+  productModel
+    .find({ id: +idProduct, review: { $elemMatch: { username: username } } })
+    .exec()
+    .then((product) => {
+      if (product.length >= 1) {
+        console.log("username feedback");
+        return res.status(200).json({
+          message: "username feedback at " + product[0].review[0].created_at,
         });
+      } else {
+        productModel
+          .updateOne(
+            { id: idProduct },
+            {
+              $push: {
+                review: {
+                  username: username,
+                  rate: rate,
+                  feedback: feedback,
+                  created_at: new Date().toLocaleDateString("en-US"),
+                },
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            result.message = "Review user created successfully";
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
       });
-  }
-);
+    });
+});
 //get image of product
 router.get("/:id/image", function (req, res, next) {
   var id = req.params.id;
