@@ -232,6 +232,47 @@ router.delete("/:idUser/cart/:index", function (req, res, next) {
       });
     });
 });
+//DeleteAll item on Cart
+router.delete("/:idUser/cart", function (req, res, next) {
+  var idUser = req.params.idUser;
+  userModel
+    .find({ id: idUser })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return res.status(401).json({
+          message: "User not found",
+        });
+      } else {
+        userModel
+          .updateOne(
+            { id: idUser },
+            {
+              $set: {
+                cart: [],
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            result.message = "DeleteAll Item On Cart successfully";
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
 //Update quantity on cart
 router.patch("/:idUser/cart/:index", function (req, res, next) {
   var idUser = req.params.idUser;
@@ -445,7 +486,7 @@ router.get("/:id/image", function (req, res, next) {
 //         });
 //       } else {
 //        // console.log("cart: " +  JSON.stringify(user[0].cart[0]));
-        
+
 //         res.status(200).json(user[0].cart);
 //       }
 //     })
