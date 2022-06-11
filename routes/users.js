@@ -472,6 +472,29 @@ router.get("/:id/image", function (req, res, next) {
     });
   });
 });
+//get cart by id user
+router.get("/:id/cart", function (req, res, next) {
+  var id = req.params.id;
+  console.log("get cart by iduser " + id);
+  userModel
+    .find(
+      { id: id },
+      {
+        cart: 1,
+      }
+    )
+    .exec()
+    .then((result) => {
+      result.idUser=id;
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
 /* GET product in cart listing. */
 // router.get("/:id/cart", function (req, res, next) {
 //   console.log("get cart by id user");
