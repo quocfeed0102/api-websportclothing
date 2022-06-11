@@ -95,12 +95,86 @@ router.post("/", multer().none(), (req, res, next) => {
   ordered
     .save()
     .then((result) => {
-      console.log(result);
-      // res.status(201).json({
-      //   status: "Ordered created",
-      //   id: id,
-      // });
-      //      resultt.ordered = "Created id " + id;
+      //update quantity product in stock
+      for (var i = 0; i < listProduct.length; i++) {
+        productModel
+          .find({ id: listProduct[i] })
+          .exec()
+          .then((product) => {
+            if (product.length < 1) {
+              // res.status(401).json({
+              //   message: "Product not found",
+              // });
+            } else {
+              productModel
+                .updateOne(
+                  { id: listProduct[i] },
+                  {
+                    $set: product,
+                  }
+                )
+                .exec()
+                .then((result) => {
+                  //             resultt.stock = "updated successfully!";
+                })
+                .catch((err) => {
+                  console.log("error2: " + err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            // res.status(500).json({
+            //   error: err,
+            // });
+          });
+      }
+      //add idOdered by user
+      userModel
+        .find({ id: id_user })
+        .exec()
+        .then((user) => {
+          if (user.length < 1) {
+            res.status(401).json({
+              message: "User not found",
+            });
+          } else {
+            if (!user[0].ordered.indexOf(id) === true) {
+              res.status(200).json({ message: "Ordered exists" });
+            } else {
+              user[0].ordered.push(id);
+              userModel
+                .updateOne(
+                  { id: id_user },
+                  {
+                    $set: {
+                      ordered: user[0].ordered,
+                    },
+                  }
+                )
+                .exec()
+                .then((result) => {
+                  //         result.message = "User updated idOdered successfully";
+                })
+                .catch((err) => {
+                  console.log("error3:" + err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          // res.status(500).json({
+          //   error: err,
+          // });
+        });
+      res.status(201).json({ status: "success", idOdered: id });
     })
     .catch((err) => {
       console.log("error1: " + err);
@@ -108,86 +182,6 @@ router.post("/", multer().none(), (req, res, next) => {
         error: err,
       });
     });
-  //update quantity product in stock
-  for (var i = 0; i < listProduct.length; i++) {
-    productModel
-      .find({ id: listProduct[i] })
-      .exec()
-      .then((product) => {
-        if (product.length < 1) {
-          res.status(401).json({
-            message: "Product not found",
-          });
-        } else {
-          productModel
-            .updateOne(
-              { id: listProduct[i] },
-              {
-                $set: product,
-              }
-            )
-            .exec()
-            .then((result) => {
-              //             resultt.stock = "updated successfully!";
-            })
-            .catch((err) => {
-              console.log("error2: " + err);
-              res.status(500).json({
-                error: err,
-              });
-            });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          error: err,
-        });
-      });
-  }
-  //add idOdered by user
-  userModel
-    .find({ id: id_user })
-    .exec()
-    .then((user) => {
-      if (user.length < 1) {
-        res.status(401).json({
-          message: "User not found",
-        });
-      } else {
-        if (!user[0].ordered.indexOf(id) === true) {
-          res.status(200).json({ message: "Ordered exists" });
-        } else {
-          user[0].ordered.push(id);
-          userModel
-            .updateOne(
-              { id: idUser },
-              {
-                $set: {
-                  ordered: user[0].ordered,
-                },
-              }
-            )
-            .exec()
-            .then((result) => {
-              //         result.message = "User updated idOdered successfully";
-            })
-            .catch((err) => {
-              console.log("error3:" + err);
-              res.status(500).json({
-                error: err,
-              });
-            });
-        }
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
-  res.status(200).json({ status: "success" });
 });
 //update status ordered
 router.patch("/:id", multer().none(), function (req, res, next) {
