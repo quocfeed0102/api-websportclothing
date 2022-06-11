@@ -70,7 +70,7 @@ router.post("/", multer().none(), (req, res, next) => {
   var totalPrice = req.body.tp;
   var id = random(30);
   var products = [];
-  var resultt = [];
+  var resultt = {};
   for (var i = 0; i < sizeProduct.length; i++) {
     products.push({
       id: +listProduct[i],
@@ -100,10 +100,10 @@ router.post("/", multer().none(), (req, res, next) => {
       //   status: "Ordered created",
       //   id: id,
       // });
-      resultt.ordered = "Created id " + id;
+      //      resultt.ordered = "Created id " + id;
     })
     .catch((err) => {
-      console.log("error: " + err);
+      console.log("error1: " + err);
       res.status(500).json({
         error: err,
       });
@@ -115,7 +115,7 @@ router.post("/", multer().none(), (req, res, next) => {
       .exec()
       .then((product) => {
         if (product.length < 1) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "Product not found",
           });
         } else {
@@ -128,10 +128,10 @@ router.post("/", multer().none(), (req, res, next) => {
             )
             .exec()
             .then((result) => {
-              resultt.stock = "updated successfully!";
+              //             resultt.stock = "updated successfully!";
             })
             .catch((err) => {
-              console.log(err);
+              console.log("error2: " + err);
               res.status(500).json({
                 error: err,
               });
@@ -147,11 +147,11 @@ router.post("/", multer().none(), (req, res, next) => {
   }
   //add idOdered by user
   userModel
-    .find({ id: idUser })
+    .find({ id: id_user })
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -170,10 +170,10 @@ router.post("/", multer().none(), (req, res, next) => {
             )
             .exec()
             .then((result) => {
-              result.message = "User updated idOdered successfully";
+              //         result.message = "User updated idOdered successfully";
             })
             .catch((err) => {
-              console.log(err);
+              console.log("error3:" + err);
               res.status(500).json({
                 error: err,
               });
@@ -187,7 +187,7 @@ router.post("/", multer().none(), (req, res, next) => {
         error: err,
       });
     });
-  return res.status(200).json(resultt);
+  res.status(200).json({ status: "success" });
 });
 //update status ordered
 router.patch("/:id", multer().none(), function (req, res, next) {
