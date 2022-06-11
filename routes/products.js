@@ -359,4 +359,38 @@ router.patch("/stock", multer().none(), function (req, res, next) {
       });
   }
 });
+router.get(
+  "/:id/available",
+  function (req, res, next) {
+    var id = req.params.id;
+
+    productModel
+      .find({
+        id: idProduct,
+        stock: {
+          $elemMatch: { size: size, available: { $gte: quantity } },
+        },
+      })
+      .exec()
+      .then((product) => {
+        if (product.length < 1) {
+          return res.status(401).json({
+            message: "Out of stock",
+          });
+        } else {
+          res
+            .status(200)
+            .json({
+              available: product[0].stock[0].available,
+              size: product[0].stock[0].size,
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: err });
+      });
+  } //end get available
+);
+
 module.exports = router;

@@ -24,9 +24,6 @@ router.get("/", function (req, res, next) {
 //get ordered by id
 router.get("/user/:id", function (req, res, next) {
   console.log("get ordered by idUser: " + req.params.id);
-  // orderedModel.aggregate({ id: req.params.id }, function (err, data) {
-  //   res.json(data);
-  // });
   orderedModel
     .aggregate([
       {
@@ -148,7 +145,7 @@ router.post("/", multer().none(), (req, res, next) => {
         });
       });
   }
-  //add idOdered on user
+  //add idOdered by user
   userModel
     .find({ id: idUser })
     .exec()

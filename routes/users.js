@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var fs = require("fs");
 var userModel = require("../models/users");
+var productModel = require("../models/products");
 const multer = require("multer");
 var imageUpload = "";
 var pathImageUpload = "";
@@ -145,40 +146,57 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
         var quantity = req.body.quantity;
         var size = req.body.size;
         var exists;
-        for (var i = 0; i < user[0].cart.length; i++) {
-          if (user[0].cart[i].id == idProduct && user[0].cart[i].size == size) {
-            exists = i;
-          }
-        }
-        if (exists !== undefined) {
-          user[0].cart[exists].quantity =
-            +user[0].cart[exists].quantity + +quantity;
-        } else {
-          user[0].cart.push({
-            id: +idProduct,
-            size: size,
-            quantity: +quantity,
-          });
-        }
-        userModel
-          .updateOne(
-            { id: idUser },
-            {
-              $set: {
-                cart: user[0].cart,
-              },
-            }
-          )
+        productModel
+          .find({
+            id: idProduct,
+            stock: {
+              $elemMatch: { size: size, available: { $gte: quantity } },
+            },
+          })
           .exec()
-          .then((result) => {
-            result.message = "Cart updated successfully";
-            res.status(200).json(result);
+          .then((product) => {
+            for (var i = 0; i < user[0].cart.length; i++) {
+              if (
+                user[0].cart[i].id == idProduct &&
+                user[0].cart[i].size == size
+              ) {
+                exists = i;
+              }
+            }
+            if (exists !== undefined) {
+              user[0].cart[exists].quantity =
+                +user[0].cart[exists].quantity + +quantity;
+            } else {
+              user[0].cart.push({
+                id: +idProduct,
+                size: size,
+                quantity: +quantity,
+              });
+            }
+            userModel
+              .updateOne(
+                { id: idUser },
+                {
+                  $set: {
+                    cart: user[0].cart,
+                  },
+                }
+              )
+              .exec()
+              .then((result) => {
+                result.message = "Cart updated successfully";
+                res.status(200).json(result);
+              })
+              .catch((err) => {
+                console.log(err);
+                res.status(500).json({
+                  error: err,
+                });
+              });
           })
           .catch((err) => {
             console.log(err);
-            res.status(500).json({
-              error: err,
-            });
+            res.status(500).json({ error: err });
           });
       }
     })
@@ -485,7 +503,7 @@ router.get("/:id/cart", function (req, res, next) {
     )
     .exec()
     .then((result) => {
-      result.idUser=id;
+      result.idUser = id;
       res.status(200).json(result);
     })
     .catch((err) => {
