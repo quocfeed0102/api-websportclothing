@@ -54,20 +54,17 @@ router.post("/", multer().none(), (req, res, next) => {
       //   });
       // }
       else {
-        userModel
-          .find({ username: username })
-          .exec()
-          .then((result) => {
-            return res.status(200).json({
-              user: result[0],
-              message: "Auth successful",
-              role: user[0].account.role,
-            });
-          })
-          .catch((err) => {
-            return res.status(500).json(error);
-          });
+        res.status(200).json({
+          message: "Auth successful",
+          role: user[0].account.role,
+          username: user[0].account.username,
+          avatar: "daylalinkimage",
+          email: user[0].email,
+        });
       }
+    })
+    .catch((err) => {
+      return res.status(500).json({ error: err });
     });
 });
 
