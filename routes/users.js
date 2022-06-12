@@ -171,6 +171,9 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
                 id: +idProduct,
                 size: size,
                 quantity: +quantity,
+                name: product[0].name,
+                image: product[0].link_image,
+                price: product[0].price,
               });
             }
             userModel
