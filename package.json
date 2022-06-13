@@ -14,6 +14,7 @@
     "express": "~4.16.1",
     "formidable": "^2.0.1",
     "http-errors": "~1.6.3",
+    "image-to-uri": "^1.0.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.10",

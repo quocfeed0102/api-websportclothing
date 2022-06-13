@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 var fs = require("fs");
 var categoryModel = require("../models/categories");
 var imageUpload = ""; //luu tru image dang upload tam thoi.
-
+var imageToUri = require("image-to-uri");
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 //const condition = [];
 
@@ -40,7 +40,7 @@ router.get("/:id", function (req, res, next) {
 router.post("/", upload.single("i"), (req, res, next) => {
   console.log("Post new category");
   var name = req.body.n;
-  var image = imageUpload;
+  var image = imageToUri(imageUpload);
   imageUpload = "";
 
   console.log("name: " + name);
@@ -89,7 +89,7 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
   var id = req.params.id;
   console.log("Put: " + id);
   var name = req.body.n;
-  var link_image = imageUpload;
+  var link_image = imageToUri(imageUpload);
   imageUpload = "";
   categoryModel
     .find({ id: id })
@@ -135,14 +135,7 @@ router.get("/:id/image", function (req, res, next) {
   console.log("get IMAGE of category by id " + id);
   categoryModel.find({ id: id }, function (err, data) {
     console.log(data[0].image);
-    let imageName = "./public/uploads/" + data[0].image;
-    fs.readFile(imageName, (err, imageData) => {
-      if (err) {
-        res.json({ result: "failed", error: err });
-      }
-      res.writeHead(200, { "content-type": "image/jpeg" });
-      res.end(imageData);
-    });
+    res.status(200).json("image: "+data[0].image);
   });
 });
 module.exports = router;

@@ -3,9 +3,21 @@ var router = express.Router();
 var fs = require("fs");
 var userModel = require("../models/users");
 var productModel = require("../models/products");
-const multer = require("multer");
+var multer = require("multer");
+// var fs = require('fs');
+
+//
+var imageToUri = require("image-to-uri");
+
 var imageUpload = "";
 var pathImageUpload = "";
+// // function to encode file data to base64 encoded string
+// function base64_encode(file) {
+//   // read binary data
+//   var bitmap = fs.readFileSync(file);
+//   // convert binary data to base64 encoded string
+//   return new Buffer(bitmap).toString('base64');
+// }
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/uploads");
@@ -76,10 +88,10 @@ router.delete("/:id", (req, res, next) => {
 router.patch("/:id", upload.single("linkAvt"), (req, res, next) => {
   var id = req.params.id;
 
-  console.log(JSON.stringify(req.body));
+  console.log("1111:" + JSON.stringify(req.body));
 
   if (imageUpload !== "") {
-    req.body.linkAvt = pathImageUpload;
+    req.body.linkAvt = imageToUri("./public/uploads/" + imageUpload);
     pathImageUpload = "";
   }
   userModel
@@ -481,16 +493,21 @@ router.patch("/:idUser/ordered", multer().none(), function (req, res, next) {
 router.get("/:id/image", function (req, res, next) {
   var id = req.params.id;
   console.log("get IMAGE of users by id " + id);
-  productModel.find({ id: id }, function (err, data) {
-    console.log(data[0].link_image);
-    let imageName = "./public/uploads/" + data[0].link_image;
-    fs.readFile(imageName, (err, imageData) => {
-      if (err) {
-        res.json({ result: "failed", error: err });
-      }
-      res.writeHead(200, { "content-type": "image/jpeg" });
-      res.end(imageData);
-    });
+  userModel.find({ id: id }, function (err, data) {
+    console.log(data[0].linkAvt);
+    // let imageName = "./public/uploads/" + data[0].link_image;
+    // fs.readFile(imageName, (err, imageData) => {
+    //   if (err) {
+    //     res.json({ result: "failed", error: err });
+    //   }
+    //   res.writeHead(200, { "content-type": "image/jpeg" });
+    //   res.end(imageData);
+    // });
+    // if (err) {
+    //   res.status(500).json({
+    //     error: err,
+    //   });
+    res.status(200).json({ image: data[0].linkAvt });
   });
 });
 //get cart by id user

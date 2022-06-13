@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 var fs = require("fs");
 var productModel = require("../models/products");
 var imageUpload = ""; //luu tru image dang upload tam thoi.
-
+var imageToUri = require("image-to-uri");
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 const condition = [];
 
@@ -50,8 +50,10 @@ router.post("/", upload.single("i"), (req, res, next) => {
   var sizeM = req.body.sm;
   var sizeL = req.body.sl;
   var description = req.body.des;
-  var link_image = imageUpload;
+
+  var link_image = imageToUri("./public/uploads/" + imageUpload);
   imageUpload = "";
+  pathImageUpload = "";
 
   console.log("name: " + name);
 
@@ -127,7 +129,9 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
   var sizeM = req.body.sm;
   var sizeL = req.body.sl;
   var description = req.body.des;
-  var link_image = imageUpload;
+
+  var link_image = imageToUri("./public/uploads/" + imageUpload);
+  pathImageUpload = "";
   imageUpload = "";
 
   console.log("name: " + name);
@@ -296,14 +300,7 @@ router.get("/:id/image", function (req, res, next) {
   console.log("get IMAGE of product by id " + id);
   productModel.find({ id: id }, function (err, data) {
     console.log(data[0].link_image);
-    let imageName = "./public/uploads/" + data[0].link_image;
-    fs.readFile(imageName, (err, imageData) => {
-      if (err) {
-        res.json({ result: "failed", error: err });
-      }
-      res.writeHead(200, { "content-type": "image/jpeg" });
-      res.end(imageData);
-    });
+    res.status(200).json("image: " + data[0].link_image);
   });
 });
 //Update sold product.stock - so luong da ban
@@ -359,14 +356,12 @@ router.patch("/stock", multer().none(), function (req, res, next) {
       });
   }
 });
-router.get(
-  "/:id/available",
+router.get("/:id/available",
   function (req, res, next) {
     var id = req.params.id;
-
     productModel
       .find({
-        id: idProduct,
+        id: id,
         stock: {
           $elemMatch: { size: size, available: { $gte: quantity } },
         },
@@ -378,12 +373,10 @@ router.get(
             message: "Out of stock",
           });
         } else {
-          res
-            .status(200)
-            .json({
-              available: product[0].stock[0].available,
-              size: product[0].stock[0].size,
-            });
+          res.status(200).json({
+            available: product[0].stock[0].available,
+            size: product[0].stock[0].size,
+          });
         }
       })
       .catch((err) => {
