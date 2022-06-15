@@ -110,37 +110,53 @@ router.patch("/:id", upload.single("linkAvt"), (req, res, next) => {
     });
 });
 //change password
-router.patch("/:id/account", (req, res, next) => {
+router.patch("/:id/account", multer().none(), (req, res, next) => {
   var password = req.body.p;
-  var rePassword = req.body.rp;
-
-  if (password == rePassword) {
-    res.status(200).json({
-      message: "rePassword not matched",
-    });
-  } else {
-    userModel
-      .updateOne(
-        { id: req.params.id },
-        {
-          $set: {
-            "account.password": req.query.p,
-            "account.created_at": new Date().toLocaleDateString("en-US"),
-          },
-        }
-      )
-      .exec()
-      .then((result) => {
-        result.message = "Password updated successfully";
-        res.status(200).json(result);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json({
-          error: err,
+  var npassword = req.body.np;
+  var renPassword = req.body.rnp;
+  userModel
+    .find({ id: req.params.id })
+    .exec()
+    .then((result) => {
+      if (result[0].account.password !== password) {
+        res.status(200).json({
+          message: "password not matched",
         });
+      } else if (npassword !== renPassword) {
+        res.status(200).json({
+          message: "rePassword not matched",
+        });
+      } else {
+        userModel
+          .updateOne(
+            { id: req.params.id },
+            {
+              $set: {
+                "account.password": npassword,
+                "account.created_at": new Date().toLocaleDateString("en-US"),
+              },
+            }
+          )
+          .exec()
+          .then((result) => {
+            result.message = "Password updated successfully";
+            res.status(200).json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({
+              error: err,
+            });
+          });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        result: "failed",
+        error: err,
       });
-  }
+    });
 });
 //insert item cart
 router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
