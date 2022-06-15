@@ -5,7 +5,6 @@ var userModel = require("../models/users");
 var productModel = require("../models/products");
 var multer = require("multer");
 // var fs = require('fs');
-
 //
 var imageToUri = require("image-to-uri");
 
@@ -44,6 +43,7 @@ var fileFilter = (req, file, cb) => {
 //var upload = multer({ storage: storage });
 
 /* GET users listing. */
+
 router.get("/", function (req, res, next) {
   userModel.find({}, function (err, data) {
     res.json(data);
@@ -365,20 +365,30 @@ router.patch("/:idUser/wishlist", function (req, res, next) {
         if (!user[0].wishlist.indexOf(idProduct) === true) {
           res.status(200).json({ message: "Product exists on wishlist" });
         } else {
-          user[0].wishlist.push(+req.query.idProduct);
           userModel
-            .updateOne(
-              { id: idUser },
-              {
-                $set: {
-                  wishlist: user[0].wishlist,
-                },
-              }
-            )
+            .find({ id: idProduct })
             .exec()
-            .then((result) => {
-              result.message = "Wishlist updated successfully";
-              res.status(200).json(result);
+            .then((product) => {
+              userModel
+                .updateOne(
+                  { id: idUser },
+                  {
+                    $push: {
+                      wishlist: product[0],
+                    },
+                  }
+                )
+                .exec()
+                .then((result) => {
+                  result.message = "Wishlist updated successfully";
+                  res.status(200).json(result);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
             })
             .catch((err) => {
               console.log(err);
