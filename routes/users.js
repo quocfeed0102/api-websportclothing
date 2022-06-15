@@ -365,7 +365,7 @@ router.patch("/:idUser/wishlist", function (req, res, next) {
         if (!user[0].wishlist.indexOf(idProduct) === true) {
           res.status(200).json({ message: "Product exists on wishlist" });
         } else {
-          userModel
+          productModel
             .find({ id: idProduct })
             .exec()
             .then((product) => {
