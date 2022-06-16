@@ -71,17 +71,17 @@ router.post("/", upload.single("i"), (req, res, next) => {
     stock: [
       {
         size: "S",
-        available: sizeS,
+        available: +sizeS,
         sold: 0,
       },
       {
         size: "M",
-        available: sizeM,
+        available: +sizeM,
         sold: 0,
       },
       {
         size: "L",
-        available: sizeL,
+        available: +sizeL,
         sold: 0,
       },
     ],

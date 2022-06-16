@@ -173,16 +173,20 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
         var idProduct = req.body.idProduct;
         var quantity = req.body.quantity;
         var size = req.body.size;
+        console.log("idProduct: " + idProduct);
+        console.log("quantity: " + quantity);
+        console.log("size: " + size);
         var exists;
         productModel
           .find({
-            id: idProduct,
+            id: +idProduct,
             stock: {
-              $elemMatch: { size: size, available: { $gte: quantity } },
+              $elemMatch: { size: size + "", available: { $gte: +quantity } },
             },
           })
           .exec()
           .then((product) => {
+            console.log(JSON.stringify(product));
             for (var i = 0; i < user[0].cart.length; i++) {
               if (
                 user[0].cart[i].id == idProduct &&
@@ -202,6 +206,7 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
                 name: product[0].name,
                 image: product[0].link_image,
                 price: product[0].price,
+                sale: product[0].sale
               });
             }
             userModel
