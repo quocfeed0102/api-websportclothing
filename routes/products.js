@@ -297,11 +297,22 @@ router.patch("/:idProduct/review", multer().none(), function (req, res, next) {
 //get image of product
 router.get("/:id/image", function (req, res, next) {
   var id = req.params.id;
-  console.log("get IMAGE of product by id " + id);
-  productModel.find({ id: id }, function (err, data) {
-    console.log(data[0].link_image);
-    res.status(200).json("image: " + data[0].link_image);
-  });
+  productModel
+    .find({ id: id })
+    .exec()
+    .then((product) => {
+      if (product.length < 1) {
+        res.status(200).json({ message: "Product not found" });
+      } else {
+        res.status(200).json({ image: product[0].link_image });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 //Update sold product.stock - so luong da ban
 router.patch("/stock", multer().none(), function (req, res, next) {
@@ -356,7 +367,8 @@ router.patch("/stock", multer().none(), function (req, res, next) {
       });
   }
 });
-router.get("/:id/available",
+router.get(
+  "/:id/available",
   function (req, res, next) {
     var id = req.params.id;
     productModel

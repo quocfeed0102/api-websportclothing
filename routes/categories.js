@@ -21,14 +21,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-/* GET products listing. */
+/* GET  listing. */
 router.get("/", function (req, res, next) {
   console.log("get categories");
   categoryModel.find({}, function (err, data) {
     res.json(data);
   });
 });
-//get product by id
+//get  by id
 router.get("/:id", function (req, res, next) {
   var id = req.params.id;
   console.log("get category by id " + id);
@@ -36,16 +36,15 @@ router.get("/:id", function (req, res, next) {
     res.json(data);
   });
 });
-//post new product
+//post new
 router.post("/", upload.single("i"), (req, res, next) => {
   console.log("Post new category");
   var name = req.body.n;
-  var image = imageToUri(imageUpload);
+  var image = imageToUri("./public/uploads/" + imageUpload);
   imageUpload = "";
 
-  console.log("name: " + name);
-
   var id = random(1000000000, 9999999999);
+  console.log("typeof " + typeof id);
   const category = new categoryModel({
     _id: new mongoose.Types.ObjectId(),
     id: id,
@@ -55,10 +54,10 @@ router.post("/", upload.single("i"), (req, res, next) => {
   category
     .save()
     .then((result) => {
-      console.log(result);
       res.status(201).json({
+        result: result,
         status: "Category created",
-        id_of_new: id,
+        id_of_new: +id,
       });
     })
     .catch((err) => {
@@ -84,12 +83,12 @@ router.delete("/:id", (req, res, next) => {
       });
     });
 });
-//Update - PUT method product
-router.put("/:id", upload.single("i"), (req, res, next) => {
+//Update
+router.patch("/:id", upload.single("i"), (req, res, next) => {
   var id = req.params.id;
   console.log("Put: " + id);
   var name = req.body.n;
-  var link_image = imageToUri(imageUpload);
+  var link_image = imageToUri("./public/uploads/" + imageUpload);
   imageUpload = "";
   categoryModel
     .find({ id: id })
@@ -132,10 +131,21 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
 //get image of product
 router.get("/:id/image", function (req, res, next) {
   var id = req.params.id;
-  console.log("get IMAGE of category by id " + id);
-  categoryModel.find({ id: id }, function (err, data) {
-    console.log(data[0].image);
-    res.status(200).json("image: "+data[0].image);
-  });
+  categoryModel
+    .find({ id: id })
+    .exec()
+    .then((category) => {
+      if (category.length < 1) {
+        res.status(200).json({ message: "Category not found" });
+      } else {
+        res.status(200).json({ image: category[0].image });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 module.exports = router;

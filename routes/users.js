@@ -88,7 +88,6 @@ router.delete("/:id", (req, res, next) => {
 router.patch("/:id", upload.single("linkAvt"), (req, res, next) => {
   var id = req.params.id;
 
-  console.log("1111:" + JSON.stringify(req.body));
 
   if (imageUpload !== "") {
     req.body.linkAvt = imageToUri("./public/uploads/" + imageUpload);
@@ -206,7 +205,7 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
                 name: product[0].name,
                 image: product[0].link_image,
                 price: product[0].price,
-                sale: product[0].sale
+                sale: product[0].sale,
               });
             }
             userModel
@@ -523,23 +522,22 @@ router.patch("/:idUser/ordered", multer().none(), function (req, res, next) {
 //get image of users
 router.get("/:id/image", function (req, res, next) {
   var id = req.params.id;
-  console.log("get IMAGE of users by id " + id);
-  userModel.find({ id: id }, function (err, data) {
-    console.log(data[0].linkAvt);
-    // let imageName = "./public/uploads/" + data[0].link_image;
-    // fs.readFile(imageName, (err, imageData) => {
-    //   if (err) {
-    //     res.json({ result: "failed", error: err });
-    //   }
-    //   res.writeHead(200, { "content-type": "image/jpeg" });
-    //   res.end(imageData);
-    // });
-    // if (err) {
-    //   res.status(500).json({
-    //     error: err,
-    //   });
-    res.status(200).json({ image: data[0].linkAvt });
-  });
+  userModel
+    .find({ id: id })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        res.status(200).json({ message: "User not found" });
+      } else {
+        res.status(200).json({ image: user[0].linkAvt });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 //get cart by id user
 router.get("/:id/cart", function (req, res, next) {

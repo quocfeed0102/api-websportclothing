@@ -6,11 +6,11 @@ const CategorySchema = new Schema(
     _id: mongoose.Schema.Types.ObjectId,
     id: {
       type: "number",
-      // required: true,
+      required: true,
+      unique: true,
     },
-    id: { type: "string" },
-    name: { type: "string" },
-    image: { type: "string" },
+    name: { type: "string", required: true, unique: true },
+    image: { type: "string", required: true, unique: true },
   },
   { collection: "Categories" }
 );
