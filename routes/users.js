@@ -202,7 +202,7 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
                 size: size,
                 quantity: +quantity,
                 name: product[0].name,
-                image: product[0].link_image,
+                link_image: product[0].link_image,
                 price: product[0].price,
                 sale: product[0].sale,
               });
@@ -528,7 +528,7 @@ router.get("/:id/image", function (req, res, next) {
       if (user.length < 1) {
         res.status(200).json({ message: "User not found" });
       } else {
-        res.status(200).json({ image: user[0].linkAvt });
+        res.status(200).json({ linkAvt: user[0].linkAvt });
       }
     })
     .catch((err) => {

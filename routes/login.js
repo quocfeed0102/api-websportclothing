@@ -59,7 +59,7 @@ router.post("/", multer().none(), (req, res, next) => {
           id: user[0].id,
           role: user[0].account.role,
           username: user[0].account.username,
-          avatar: user[0].linkAvt,
+          linkAvt: user[0].linkAvt,
           email: user[0].email,
         });
       }
