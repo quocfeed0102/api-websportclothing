@@ -267,7 +267,7 @@ router.patch("/:idProduct/review", multer().none(), function (req, res, next) {
               $push: {
                 review: {
                   username: username,
-                  rate: rate,
+                  rate: +rate,
                   feedback: feedback,
                   created_at: new Date().toLocaleDateString("en-US"),
                 },
@@ -369,13 +369,21 @@ router.patch("/stock", multer().none(), function (req, res, next) {
 });
 router.get(
   "/:id/available",
+  multer().none(),
   function (req, res, next) {
     var id = req.params.id;
+    var size = req.body.size;
+    var quantity = req.body.quantity;
+
+    console.log("available");
+    console.log("id: " + id);
+    console.log("size: " + size);
+    console.log("quantity: " + quantity);
     productModel
       .find({
-        id: id,
+        id: +id,
         stock: {
-          $elemMatch: { size: size, available: { $gte: quantity } },
+          $elemMatch: { size: "" + size, available: { $gte: +quantity } },
         },
       })
       .exec()
@@ -386,8 +394,8 @@ router.get(
           });
         } else {
           res.status(200).json({
-            available: product[0].stock[0].available,
-            size: product[0].stock[0].size,
+            available: true,
+            size: size,
           });
         }
       })
