@@ -56,6 +56,7 @@ router.post("/", multer().none(), (req, res, next) => {
       else {
         res.status(200).json({
           message: "Auth successful",
+          id: user[0].id,
           role: user[0].account.role,
           username: user[0].account.username,
           avatar: user[0].linkAvt,
