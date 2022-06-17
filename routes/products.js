@@ -140,7 +140,7 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
     .exec()
     .then((product) => {
       if (product.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "Product not found",
         });
       } else {
@@ -256,7 +256,7 @@ router.patch("/:idProduct/review", multer().none(), function (req, res, next) {
     .then((product) => {
       if (product.length >= 1) {
         console.log("username feedback");
-        return res.status(200).json({
+        res.status(200).json({
           message: "username feedback at " + product[0].review[0].created_at,
         });
       } else {
@@ -326,7 +326,7 @@ router.patch("/stock", multer().none(), function (req, res, next) {
       .exec()
       .then((product) => {
         if (product.length < 1) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "Product not found",
           });
         } else {
@@ -381,7 +381,7 @@ router.get(
       .exec()
       .then((product) => {
         if (product.length < 1) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "Out of stock",
           });
         } else {

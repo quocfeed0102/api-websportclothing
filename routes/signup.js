@@ -64,7 +64,7 @@ router.post("/", multer().none(), (req, res, next) => {
               message.email = "exists";
             }
           });
-          return res.status(409).json(message);
+          res.status(409).json(message);
         } else {
           // bcrypt.hash(password, 10, (err, hash) => {
           //   if (err) {

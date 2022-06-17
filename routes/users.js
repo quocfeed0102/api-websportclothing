@@ -88,7 +88,6 @@ router.delete("/:id", (req, res, next) => {
 router.patch("/:id", upload.single("linkAvt"), (req, res, next) => {
   var id = req.params.id;
 
-
   if (imageUpload !== "") {
     req.body.linkAvt = imageToUri("./public/uploads/" + imageUpload);
     pathImageUpload = "";
@@ -165,7 +164,7 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -250,7 +249,7 @@ router.delete("/:idUser/cart/:index", function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -293,7 +292,7 @@ router.delete("/:idUser/cart", function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -334,7 +333,7 @@ router.patch("/:idUser/cart/:index", function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -377,7 +376,7 @@ router.patch("/:idUser/wishlist", function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -434,7 +433,7 @@ router.delete("/:idUser/wishlist/:index", function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {
@@ -478,7 +477,7 @@ router.patch("/:idUser/ordered", multer().none(), function (req, res, next) {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "User not found",
         });
       } else {

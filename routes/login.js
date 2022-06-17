@@ -17,11 +17,11 @@ router.post("/", multer().none(), (req, res, next) => {
     .exec()
     .then((user) => {
       if (user.length < 1) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "NOT FOUND USER",
         });
       } else if (password !== user[0].account.password) {
-        return res.status(401).json({
+        res.status(401).json({
           message: "Auth failed",
         });
       }
@@ -58,13 +58,13 @@ router.post("/", multer().none(), (req, res, next) => {
           message: "Auth successful",
           role: user[0].account.role,
           username: user[0].account.username,
-          avatar: "daylalinkimage",
+          avatar: user[0].linkAvt,
           email: user[0].email,
         });
       }
     })
     .catch((err) => {
-      return res.status(500).json({ error: err });
+      res.status(500).json({ error: err });
     });
 });
 

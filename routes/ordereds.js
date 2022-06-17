@@ -193,7 +193,7 @@ router.patch("/:id", multer().none(), function (req, res, next) {
     .exec()
     .then((ordered) => {
       if (ordered.length < 1) {
-        return res.status(401).json({
+         res.status(401).json({
           message: "Ordered not found",
         });
       } else {
