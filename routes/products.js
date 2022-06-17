@@ -405,5 +405,30 @@ router.get(
       });
   } //end get available
 );
-
+//get review of product by username
+router.get("/:id/review/:username", function (req, res, next) {
+  var id = req.params.id;
+  var username = req.params.username;
+  productModel
+    .find({
+      id: id,
+      review: {
+        $elemMatch: { username: "" + username },
+      },
+    })
+    .exec()
+    .then((result) => {
+      if (result.length < 1) {
+        res.status(200).json({ message: "Username didn't feedback " });
+      } else {
+        res.status(200).json(result[0].review);
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
 module.exports = router;
