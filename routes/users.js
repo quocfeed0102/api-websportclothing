@@ -184,50 +184,57 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
           })
           .exec()
           .then((product) => {
-            console.log(JSON.stringify(product));
-            for (var i = 0; i < user[0].cart.length; i++) {
-              if (
-                user[0].cart[i].id == idProduct &&
-                user[0].cart[i].size == size
-              ) {
-                exists = i;
-              }
-            }
-            if (exists !== undefined) {
-              user[0].cart[exists].quantity =
-                +user[0].cart[exists].quantity + +quantity;
+            if (product.length < 1) {
+              res.status(200).json({
+                message: "Product not found",
+              });
             } else {
-              user[0].cart.push({
-                id: +idProduct,
-                size: size,
-                quantity: +quantity,
-                name: product[0].name,
-                link_image: product[0].link_image,
-                price: product[0].price,
-                sale: product[0].sale,
-              });
-            }
-            userModel
-              .updateOne(
-                { id: idUser },
-                {
-                  $set: {
-                    cart: user[0].cart,
-                  },
+              console.log(JSON.stringify(product));
+              for (var i = 0; i < user[0].cart.length; i++) {
+                if (
+                  user[0].cart[i].id == idProduct &&
+                  user[0].cart[i].size == size
+                ) {
+                  exists = i;
                 }
-              )
-              .exec()
-              .then((result) => {
-                result.message = "Cart updated successfully";
-                res.status(200).json(result);
-              })
-              .catch((err) => {
-                console.log(err);
-                res.status(500).json({
-                  error: err,
+              }
+              if (exists !== undefined) {
+                user[0].cart[exists].quantity =
+                  +user[0].cart[exists].quantity + +quantity;
+              } else {
+                user[0].cart.push({
+                  id: +idProduct,
+                  size: size,
+                  quantity: +quantity,
+                  name: product[0].name,
+                  link_image: product[0].link_image,
+                  price: product[0].price,
+                  sale: product[0].sale,
                 });
-              });
+              }
+              userModel
+                .updateOne(
+                  { id: idUser },
+                  {
+                    $set: {
+                      cart: user[0].cart,
+                    },
+                  }
+                )
+                .exec()
+                .then((result) => {
+                  result.message = "Cart updated successfully";
+                  res.status(200).json(result);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
           })
+
           .catch((err) => {
             console.log(err);
             res.status(500).json({ error: err });
