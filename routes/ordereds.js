@@ -21,7 +21,7 @@ router.get("/", function (req, res, next) {
     res.json(data);
   });
 });
-//get ordered by id
+//get ordered by iduser
 router.get("/user/:id", function (req, res, next) {
   console.log("get ordered by idUser: " + req.params.id);
   orderedModel
@@ -51,9 +51,24 @@ router.get("/user/:id", function (req, res, next) {
     .exec()
     .then((data) => {
       res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
     });
 });
-
+//get by id
+router.get("/:id", function (req, res, next) {
+  console.log("get ordered by id: " + req.params.id);
+  orderedModel
+    .find({ id: id })
+    .exec()
+    .then((data) => {
+      res.status(200).json(data);
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
+});
 //insert new ordered
 router.post("/", multer().none(), (req, res, next) => {
   var id_user = req.body.idUser;
@@ -193,7 +208,7 @@ router.patch("/:id", multer().none(), function (req, res, next) {
     .exec()
     .then((ordered) => {
       if (ordered.length < 1) {
-         res.status(401).json({
+        res.status(401).json({
           message: "Ordered not found",
         });
       } else {
