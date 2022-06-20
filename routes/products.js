@@ -118,7 +118,7 @@ router.delete("/:id", (req, res, next) => {
     });
 });
 //Update - PUT method product
-router.put("/:id", upload.single("i"), (req, res, next) => {
+router.put("/:id", multer().none(), (req, res, next) => {
   var id = req.params.id;
   console.log("Put: " + id);
   var name = req.body.n;
@@ -129,14 +129,7 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
   var sizeM = req.body.sm;
   var sizeL = req.body.sl;
   var description = req.body.des;
-  var link_image;
-  if (imageUpload.contains("base64")) {
-    link_image = imageUpload;
-  } else {
-    link_image = imageToUri("./public/uploads/" + imageUpload);
-  }
-  pathImageUpload = "";
-  imageUpload = "";
+  var bs64= req.
   productModel
     .find({ id: id })
     .exec()
