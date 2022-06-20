@@ -593,4 +593,31 @@ router.get("/:id/cart", function (req, res, next) {
 //       });
 //     });
 // });
+//patch banned
+router.patch("/:id/status",multer().none(), function (req, res, next) {
+  var id = req.params.id;
+  var status = req.body.status;
+  console.log("status: " + status);
+  console.log("patch status by iduser " + id);
+  userModel
+    .updateOne(
+      { id: id },
+      {
+        $set: {
+          'account.status':status,
+        },
+      }
+    )
+    .exec()
+    .then((result) => {
+      res.status(200).json(result);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
 module.exports = router;

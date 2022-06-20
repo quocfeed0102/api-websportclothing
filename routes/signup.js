@@ -13,7 +13,7 @@ router.post("/", multer().none(), (req, res, next) => {
   var password = req.body.pw;
   var repassword = req.body.rpw;
   var name = req.body.n;
-
+  var role = req.body.role;
   //check password & repassword
 
   if (password !== repassword) {
@@ -66,50 +66,52 @@ router.post("/", multer().none(), (req, res, next) => {
           });
           res.status(409).json(message);
         } else {
-          // bcrypt.hash(password, 10, (err, hash) => {
-          //   if (err) {
-          //     return res.status(500).json({
-          //       error: err,
-          //     });
-          //   } else {
-          const user = new userModel({
-            _id: new mongoose.Types.ObjectId(),
-            id: random(30),
-            name: name,
-            phone: phone,
-            email: email,
-            gender: "",
-            age: "",
-            address: "",
-            linkAvt: "",
-            account: {
-              username: username,
-              password: repassword,
-              created_at: new Date().toLocaleDateString("en-US"),
-            },
-            wishList: [],
-            cart: [],
-            ordered: [],
-          });
-          user
-            .save()
-            .then((result) => {
-              console.log(result);
-              res.status(201).json({
-                status: "User created",
-              });
-            })
-            .catch((err) => {
-              console.log("error: " + err);
-              res.status(500).json({
+          bcrypt.hash(password, 10, (err, hash) => {
+            if (err) {
+              return res.status(500).json({
                 error: err,
               });
-            });
+            } else {
+              const user = new userModel({
+                _id: new mongoose.Types.ObjectId(),
+                id: random(30),
+                name: name,
+                phone: phone,
+                email: email,
+                gender: "",
+                age: "",
+                address: "",
+                linkAvt: "",
+                account: {
+                  username: username,
+                  password: hash,
+                  role: role,
+                  status:"active",
+                  created_at: new Date().toLocaleDateString("en-US"),
+                },
+                wishList: [],
+                cart: [],
+                ordered: [],
+              });
+              user
+                .save()
+                .then((result) => {
+                  console.log(result);
+                  res.status(201).json({
+                    status: "User created",
+                  });
+                })
+                .catch((err) => {
+                  console.log("error: " + err);
+                  res.status(500).json({
+                    error: err,
+                  });
+                });
+            }
+          });
         }
       });
   }
-  //     });
-  //  }
 });
 
 module.exports = router;
