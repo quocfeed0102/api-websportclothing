@@ -40,7 +40,7 @@ router.get("/:id", function (req, res, next) {
   });
 });
 //post new product
-router.post("/", upload.single("i"), (req, res, next) => {
+router.post("/", multer().none(), (req, res, next) => {
   console.log("Post new product");
   var name = req.body.n;
   var price = req.body.p;
@@ -51,9 +51,7 @@ router.post("/", upload.single("i"), (req, res, next) => {
   var sizeL = req.body.sl;
   var description = req.body.des;
 
-  var link_image = imageToUri("./public/uploads/" + imageUpload);
-  imageUpload = "";
-  pathImageUpload = "";
+  var link_image = req.body.bs64;
 
   console.log("name: " + name);
 
