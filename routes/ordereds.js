@@ -60,10 +60,12 @@ router.get("/user/:id", function (req, res, next) {
 router.get("/:id", function (req, res, next) {
   console.log("get ordered by id: " + req.params.id);
   orderedModel
-    .find({ id: id })
+    .find({ id: req.params.id })
     .exec()
     .then((data) => {
-      res.status(200).json(data);
+      if (data.length < 1) {
+        res.status(200).json({ message: "Not found" });
+      } else res.status(200).json(data);
     })
     .catch((err) => {
       res.status(500).json(err);
@@ -86,13 +88,7 @@ router.post("/", multer().none(), (req, res, next) => {
   var id = random(30);
   var products = [];
   var resultt = {};
-  for (var i = 0; i < sizeProduct.length; i++) {
-    products.push({
-      id: +listProduct[i],
-      size: sizeProduct[i],
-      quantity: +quantityList[i],
-    });
-  }
+
   const ordered = new orderedModel({
     _id: new mongoose.Types.ObjectId(),
     id: id,
@@ -197,6 +193,29 @@ router.post("/", multer().none(), (req, res, next) => {
         error: err,
       });
     });
+  for (var i = 0; i < sizeProduct.length; i++) {
+    productModel
+      .find({ id: +listProduct[i] })
+      .exec()
+      .then(function (result) {
+        if (result.length >= 1) {
+          orderedModel
+            .updateOne({
+              id: id,
+              $push: {
+                products: result[0],
+              },
+            })
+            .exec()
+            .then(function (result) {
+              console.log("success");
+            })
+            .catch(function (err) {
+              console.log(err);
+            });
+        }
+      });
+  }
 });
 //update status ordered
 router.patch("/:id", multer().none(), function (req, res, next) {
@@ -241,7 +260,7 @@ router.patch("/:id", multer().none(), function (req, res, next) {
       });
     });
 });
-//get product sale
+//get order by email
 router.get("/filter/:email", function (req, res, next) {
   console.log("get list ordered by email");
   var email = req.params.email;
