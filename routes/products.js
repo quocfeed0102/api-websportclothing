@@ -129,7 +129,7 @@ router.put("/:id", multer().none(), (req, res, next) => {
   var sizeM = req.body.sm;
   var sizeL = req.body.sl;
   var description = req.body.des;
-  var bs64= req.
+  var link_image = req.body.bs64;
   productModel
     .find({ id: id })
     .exec()
