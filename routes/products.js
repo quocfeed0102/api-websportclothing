@@ -129,12 +129,14 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
   var sizeM = req.body.sm;
   var sizeL = req.body.sl;
   var description = req.body.des;
-
-  var link_image = imageToUri("./public/uploads/" + imageUpload);
+  var link_image;
+  if (imageUpload.contains("base64")) {
+    link_image = imageUpload;
+  } else {
+    link_image = imageToUri("./public/uploads/" + imageUpload);
+  }
   pathImageUpload = "";
   imageUpload = "";
-
-  console.log("name: " + name);
   productModel
     .find({ id: id })
     .exec()
@@ -159,17 +161,17 @@ router.put("/:id", upload.single("i"), (req, res, next) => {
                 stock: [
                   {
                     size: "S",
-                    available: sizeS,
+                    available: +sizeS,
                     sold: product[0].stock[0].sold,
                   },
                   {
                     size: "M",
-                    available: sizeM,
+                    available: +sizeM,
                     sold: product[0].stock[1].sold,
                   },
                   {
                     size: "L",
-                    available: sizeL,
+                    available: +sizeL,
                     sold: product[0].stock[2].sold,
                   },
                 ],
@@ -395,7 +397,7 @@ router.get(
         } else {
           res.status(200).json({
             available: true,
-            size: size,
+            size: +size,
           });
         }
       })
