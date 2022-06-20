@@ -209,7 +209,7 @@ router.patch("/:idUser/cart", multer().none(), function (req, res, next) {
                   name: product[0].name,
                   link_image: product[0].link_image,
                   price: product[0].price,
-                  sale: product[0].sale,
+                  discount: product[0].discount,
                 });
               }
               userModel
