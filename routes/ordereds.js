@@ -88,7 +88,7 @@ router.post("/", multer().none(), (req, res, next) => {
   var id = random(30);
   var products = [];
   var resultt = {};
-
+  console.log("id: " + id);
   const ordered = new orderedModel({
     _id: new mongoose.Types.ObjectId(),
     id: id,
@@ -205,20 +205,19 @@ router.post("/", multer().none(), (req, res, next) => {
       .exec()
       .then(function (result) {
         if (result.length >= 1) {
+          console.log("id: " + id);
           orderedModel
-            .updateOne({
-              id: id,
-              $push: {
-                products: {
-                  data: result[0],
-                  // size: +sizeProduct[i],
-                  // quantity: +quantityList[i]
+            .updateOne(
+              { id: id },
+              {
+                $push: {
+                  products: { data: result[0] },
                 },
-              },
-            })
+              }
+            )
             .exec()
             .then(function (result) {
-              console.log("success");
+              console.log("result: " + JSON.stringify(result));
             })
             .catch(function (err) {
               console.log(err);
