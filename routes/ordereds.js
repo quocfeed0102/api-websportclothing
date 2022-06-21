@@ -99,10 +99,13 @@ router.post("/", multer().none(), (req, res, next) => {
     recipient_address: recipientAddress,
     note: note,
     products: products,
+    size_list: sizeProduct,
+    quantity_list: quantityList,
     discount: +discount,
     total_price: +totalPrice,
     status: "shipping",
   });
+  console.log(ordered);
   ordered
     .save()
     .then((result) => {
@@ -195,7 +198,10 @@ router.post("/", multer().none(), (req, res, next) => {
     });
   for (var i = 0; i < sizeProduct.length; i++) {
     productModel
-      .find({ id: +listProduct[i] })
+      .find(
+        { id: +listProduct[i] },
+        { id: 1, name: 1, discount: 1, price: 1, link_image: 1 }
+      ) //name,discount,price,image
       .exec()
       .then(function (result) {
         if (result.length >= 1) {
@@ -203,7 +209,11 @@ router.post("/", multer().none(), (req, res, next) => {
             .updateOne({
               id: id,
               $push: {
-                products: result[0],
+                products: {
+                  data: result[0],
+                  // size: +sizeProduct[i],
+                  // quantity: +quantityList[i]
+                },
               },
             })
             .exec()

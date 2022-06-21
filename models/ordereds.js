@@ -12,6 +12,8 @@ const OrderSchema = new Schema(
     recipient_address: { type: "string" },
     note: { type: "string" },
     products: { type: "array" },
+    size_list: { type: "array" },
+    quantity_list: { type: "array" },
     discount: { type: "number" },
     total_price: { type: "number" },
     status: { type: "string" },
